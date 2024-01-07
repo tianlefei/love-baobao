@@ -1,6 +1,6 @@
 $(function() {
     $('#yes').click(function(event) {
-        modal('我就知道小姐姐您一定会愿意的。(^_^)', function() {
+        modal('我会一直爱你！(^_^)', function() {
             $('.page_one').addClass('hide');
             $('.page_two').removeClass('hide');
             // typeWrite();
@@ -18,11 +18,11 @@ function A() {
 }
 
 function B() {
-    modal('我知道你在等我这一句话', C);
+    modal('我想鼓起勇气！', C);
 }
 
 function C() {
-    modal('请您不要拒绝我', D);
+    modal('请你不要拒绝我', D);
 }
 
 function D() {
