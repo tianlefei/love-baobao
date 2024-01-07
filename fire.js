@@ -17,6 +17,10 @@ var bigbooms = [];
 //        music.play();
 //    };
 //};
+var myAudio = document.getElementById('music');
+      myAudio.muted = false;  // 将 muted 属性设置为 false
+      myAudio.autoplay = true;  // 将 autoplay 属性设置为 true
+      myAudio.play();
 
 function initAnimate() {
     drawBg();
