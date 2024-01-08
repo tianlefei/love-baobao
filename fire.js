@@ -7,7 +7,7 @@ ocas.height = canvas.height = window.innerHeight;
 var bigbooms = [];
 
 // window.onload = function() {
-//     initAnimate();
+//     autoPlayMusic()
 // };
 
 //document.getElementById("iframMusic").onload = function(){
@@ -18,16 +18,65 @@ var bigbooms = [];
 //    };
 //};
 
-document.addEventListener('DOMContentLoaded', function () {
-    function audioAutoPlay() {
-        var audio = document.getElementById('music');
-            audio.play();
-        document.addEventListener("WeixinJSBridgeReady", function () {
-            audio.play();
-        }, false);
-    }
-    audioAutoPlay();
-});
+// 音乐播放
+//function autoPlayMusic() {
+//  // 自动播放音乐效果，解决浏览器或者APP自动播放问题
+//  function musicInBrowserHandler() {
+//    musicPlay(true);
+//    document.body.removeEventListener('touchstart', musicInBrowserHandler);
+//  }
+//  document.body.addEventListener('touchstart', musicInBrowserHandler);
+//
+//  // 自动播放音乐效果，解决微信自动播放问题
+//  function musicInWeixinHandler() {
+//    musicPlay(true);
+//    document.addEventListener("WeixinJSBridgeReady",
+//    function() {
+//      musicPlay(true);
+//    },
+//    false);
+//    document.removeEventListener('DOMContentLoaded', musicInWeixinHandler);
+//  }
+//  document.addEventListener('DOMContentLoaded', musicInWeixinHandler);
+//}
+//function musicPlay(isPlay) {
+//  var media = document.querySelector('music');
+//  if (isPlay && media.paused) {
+//    media.play();
+//  }
+//  if (!isPlay && !media.paused) {
+//    media.pause();
+//  }
+//}
+
+function initMusic() {
+	//动态创建一个audio节点
+    var audio = document.createElement('audio');
+    audio.setAttribute('id', 'audio');
+    audio.setAttribute('autoplay', 'autoplay');
+    audio.setAttribute('loop', 'loop');
+    audio.innerHTML = '<source src="http://music.163.com/song/media/outer/url?id=553544145.mp3" type="audio/mpeg">';
+
+    //将audio节点追加到dom
+    document.body.appendChild(audio);
+    audio.load();
+
+	//iOS Safari可能是出于防止骚扰用户的考虑，首次非用户触发的play不会生效
+    audio.play();
+    audio.pause();
+
+    document.addEventListener("WeixinJSBridgeReady", function () {
+    	//微信H5环境，监听WeixinJSBridgeReady事件，再次进行play
+    	//亲测iOS 微信H5页面能够自动播放
+        document.getElementById('audio').play();
+    }, false);
+}
+
+window.onload = function() {
+	//初始化一段音乐，并直接进行播放
+    initMusic();
+};
+
 
 function initAnimate() {
     drawBg();
