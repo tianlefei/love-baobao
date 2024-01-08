@@ -39,14 +39,13 @@
 </head>
 
 <body onselectstart="return false">
-<button onclick="playAudio()">播放音乐</button>
     <!--对话部分-->
     <div class="share_img"><img src="a8b.png" alt=""></div>
 
     <div class="page_one">
         <div class="content">
             <div class="text_wrapper">
-                <img src="a8.png" alt="">
+                <img src="a8.png" alt=""  onclick="playAudio()">
                 <div class="text">
                     公主，我好喜欢你，你愿意做我女朋友吗？
                 </div>
@@ -75,9 +74,8 @@
             我喜欢你
         </div>
     </div>
-    <button onclick="playAudio()">播放音乐</button>
 
-    <audio id="music" loop="loop" preload="auto"
+    <audio id="music" loop="loop" preload="auto" autoplay="autoplay"
             src="http://music.163.com/song/media/outer/url?id=553544145.mp3">
 </audio>
     <script>
