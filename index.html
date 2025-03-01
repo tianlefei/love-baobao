@@ -183,29 +183,6 @@
             // 设置初始位置
             const startX = Math.random() * (window.innerWidth - 50);
             
-            // 创建独立的style对象
-            const style = {
-                left: startX + 'px',
-                top: window.innerHeight + 'px'
-            };
-            
-            // 根据屏幕宽度调整心形大小范围
-            let minSize, maxSize;
-            if (window.innerWidth <= 768) {  // 手机屏幕
-                minSize = 12;
-                maxSize = 24;
-            } else if (window.innerWidth <= 1024) {  // 平板屏幕
-                minSize = 16;
-                maxSize = 32;
-            } else {  // 电脑屏幕
-                minSize = 20;
-                maxSize = 40;
-            }
-            
-            // 随机大小
-            const size = Math.random() * (maxSize - minSize) + minSize;
-            style.fontSize = `${size}px`;
-            
             // 随机颜色
             const colors = [
                 '#ff4b6a',  // 粉红
@@ -218,10 +195,26 @@
                 '#ff77aa'   // 中粉
             ];
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            style.color = randomColor;
             
-            // 应用样式
-            Object.assign(heart.style, style);
+            // 使用内联样式直接设置所有属性
+            heart.style.position = 'fixed';
+            heart.style.zIndex = '9999';
+            heart.style.pointerEvents = 'none';
+            heart.style.userSelect = 'none';
+            heart.style.left = startX + 'px';
+            heart.style.top = window.innerHeight + 'px';
+            heart.style.color = randomColor;
+            
+            // 根据屏幕宽度调整心形大小范围
+            let size;
+            if (window.innerWidth <= 768) {  // 手机屏幕
+                size = Math.random() * 12 + 12; // 12-24px
+            } else if (window.innerWidth <= 1024) {  // 平板屏幕
+                size = Math.random() * 16 + 16; // 16-32px
+            } else {  // 电脑屏幕
+                size = Math.random() * 20 + 20; // 20-40px
+            }
+            heart.style.fontSize = `${size}px`;
             
             // 添加到文档
             document.body.appendChild(heart);
