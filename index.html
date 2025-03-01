@@ -13,6 +13,10 @@
     <link rel="icon" type="image/x-icon" href="https://cdn.jsdelivr.net/gh/sun0225SUN/photos/img/20210715233345.png">
     <link href="modal.css" rel="stylesheet" />
     <style>
+        :root {
+            --heart-color: #ff1493;
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -109,6 +113,177 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+
+        .custom-heart-container {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 400px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .custom-heart {
+            background-color: var(--heart-color);
+            width: 150px;
+            height: 150px;
+            position: relative;
+            transform: rotate(45deg);
+            animation: heartbeat 1.5s ease-in-out infinite;
+            box-shadow: 0 0 40px rgba(255, 20, 147, 0.7);
+        }
+
+        .main-heart {
+            margin-right: 40px;
+        }
+
+        .leaning-heart {
+            width: 120px;
+            height: 120px;
+            transform: rotate(60deg);
+            animation: leaningHeartbeat 1.5s ease-in-out infinite;
+            animation-delay: 0.5s;
+            background-color: var(--second-heart-color, #ff6b8b);
+            box-shadow: 0 0 30px rgba(255, 107, 139, 0.7);
+            margin-left: -60px;
+            margin-top: -30px;
+        }
+
+        .custom-heart:before,
+        .custom-heart:after {
+            content: "";
+            background-color: inherit;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .main-heart:before,
+        .main-heart:after {
+            width: 150px;
+            height: 150px;
+        }
+
+        .main-heart:before {
+            top: -75px;
+            left: 0;
+        }
+
+        .main-heart:after {
+            top: 0;
+            left: -75px;
+        }
+
+        .leaning-heart:before,
+        .leaning-heart:after {
+            width: 120px;
+            height: 120px;
+        }
+
+        .leaning-heart:before {
+            top: -60px;
+            left: 0;
+        }
+
+        .leaning-heart:after {
+            top: 0;
+            left: -60px;
+        }
+
+        @keyframes heartbeat {
+            0% {
+                transform: rotate(45deg) scale(1);
+            }
+            15% {
+                transform: rotate(45deg) scale(1.1);
+            }
+            30% {
+                transform: rotate(45deg) scale(1);
+            }
+            45% {
+                transform: rotate(45deg) scale(1.1);
+            }
+            60% {
+                transform: rotate(45deg) scale(1);
+            }
+            100% {
+                transform: rotate(45deg) scale(1);
+            }
+        }
+
+        @keyframes leaningHeartbeat {
+            0% {
+                transform: rotate(60deg) scale(1);
+            }
+            15% {
+                transform: rotate(60deg) scale(1.1);
+            }
+            30% {
+                transform: rotate(60deg) scale(1);
+            }
+            45% {
+                transform: rotate(60deg) scale(1.1);
+            }
+            60% {
+                transform: rotate(60deg) scale(1);
+            }
+            100% {
+                transform: rotate(60deg) scale(1);
+            }
+        }
+
+        /* 为移动设备优化 */
+        @media (max-width: 768px) {
+            .custom-heart-container {
+                width: 280px;
+                height: 200px;
+                bottom: 60px;
+            }
+            
+            .main-heart {
+                width: 100px;
+                height: 100px;
+                margin-right: 20px;
+            }
+            
+            .leaning-heart {
+                width: 80px;
+                height: 80px;
+                margin-left: -40px;
+                margin-top: -20px;
+            }
+            
+            .main-heart:before,
+            .main-heart:after {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .main-heart:before {
+                top: -50px;
+            }
+            
+            .main-heart:after {
+                left: -50px;
+            }
+            
+            .leaning-heart:before,
+            .leaning-heart:after {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .leaning-heart:before {
+                top: -40px;
+            }
+            
+            .leaning-heart:after {
+                left: -40px;
+            }
+        }
     </style>
 </head>
 
@@ -163,6 +338,10 @@
 </audio>
     <div class="music-control">
         <i class="music-icon playing"></i>
+    </div>
+    <div class="custom-heart-container">
+        <div class="custom-heart main-heart"></div>
+        <div class="custom-heart leaning-heart"></div>
     </div>
     <script src="jquery.min.js"></script>
     <script src="fire.js"></script>
@@ -260,6 +439,53 @@
                 audio.pause();
                 icon.classList.remove('playing');
             }
+        });
+
+        function createBeatingHeart() {
+            const mainHeart = document.querySelector('.main-heart');
+            const leaningHeart = document.querySelector('.leaning-heart');
+            
+            // 随机变换颜色
+            setInterval(() => {
+                const mainColors = [
+                    '#ff1493',  // 深粉
+                    '#ff0066',  // 亮粉
+                    '#ff007f',  // 玫红
+                    '#e91e63',  // 粉红色
+                    '#f06292'   // 浅粉红
+                ];
+                
+                const secondColors = [
+                    '#ff6b8b',  // 浅粉
+                    '#ff8ba8',  // 淡粉
+                    '#ffb6c1',  // 浅粉红
+                    '#ff77aa',  // 中粉
+                    '#ffa6c9'   // 粉红
+                ];
+                
+                const mainColor = mainColors[Math.floor(Math.random() * mainColors.length)];
+                const secondColor = secondColors[Math.floor(Math.random() * secondColors.length)];
+                
+                // 更新主心形颜色
+                document.documentElement.style.setProperty('--heart-color', mainColor);
+                mainHeart.style.backgroundColor = mainColor;
+                mainHeart.style.boxShadow = `0 0 40px ${mainColor}aa`;
+                
+                // 更新斜靠心形颜色
+                document.documentElement.style.setProperty('--second-heart-color', secondColor);
+                leaningHeart.style.backgroundColor = secondColor;
+                leaningHeart.style.boxShadow = `0 0 30px ${secondColor}aa`;
+            }, 3000);
+        }
+
+        // 初始化颜色变量
+        document.documentElement.style.setProperty('--heart-color', '#ff1493');
+        document.documentElement.style.setProperty('--second-heart-color', '#ff6b8b');
+
+        // 在页面加载完成后初始化跳动的心形
+        document.addEventListener('DOMContentLoaded', function() {
+            startHearts();
+            createBeatingHeart();
         });
     </script>
 </body>
