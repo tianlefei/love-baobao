@@ -3,9 +3,11 @@ $(function() {
         modal('我会一直爱你！(^_^)', function() {
             $('.page_one').addClass('hide');
             $('.page_two').removeClass('hide');
-            // typeWrite();
+            // 停止心形动画
+            if (typeof stopHearts === 'function') {
+                stopHearts();
+            }
             fireworks();
-
         });
     });
     $('#no').click(function(event) {

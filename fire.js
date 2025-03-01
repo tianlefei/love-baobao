@@ -86,30 +86,54 @@ function initAnimate() {
 var lastTime;
 function animate() {
     ctx.save();
-    ctx.fillStyle = "rgba(0,5,24,0.1)";
+    ctx.fillStyle = "rgba(0,5,24,0.08)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.restore();
     var newTime = new Date();
-    if (newTime - lastTime > 500 + (window.innerHeight - 767) / 2) {
-        var random = Math.random() * 100 > 33 ? true: false;
-        var x = getRandom(canvas.width / 5, canvas.width * 4 / 5);
-        var y = getRandom(50, 200);
-        if (random) {
-            var bigboom = new Boom(getRandom(canvas.width / 3, canvas.width * 2 / 3), 2, "#FFF", {
-                x: x,
+    if (newTime - lastTime > 800 + (window.innerHeight - 767) / 2) {
+        // 随机决定是显示文字还是普通烟花
+        var isText = Math.random() > 0.4; // 60%概率显示文字，40%概率显示普通烟花
+
+        if (isText) {
+            // 创建三个文字烟花
+            var x1 = getRandom(canvas.width / 6, canvas.width / 3);
+            var x2 = getRandom(canvas.width / 2 - 50, canvas.width / 2 + 50);
+            var x3 = getRandom(canvas.width * 2/3, canvas.width * 5/6);
+            var y = getRandom(50, 200);
+
+            var bigboom1 = new Boom(x1, 2, "#FFF", {
+                x: x1,
                 y: y
-            });
-            bigbooms.push(bigboom)
+            }, document.querySelectorAll(".shape")[0]);
+
+            var bigboom2 = new Boom(x2, 2, "#FFF", {
+                x: x2,
+                y: y
+            }, document.querySelectorAll(".shape")[1]);
+
+            var bigboom3 = new Boom(x3, 2, "#FFF", {
+                x: x3,
+                y: y
+            }, document.querySelectorAll(".shape")[2]);
+
+            bigbooms.push(bigboom1);
+            bigbooms.push(bigboom2);
+            bigbooms.push(bigboom3);
         } else {
-            var bigboom = new Boom(getRandom(canvas.width / 3, canvas.width * 2 / 3), 2, "#FFF", {
-                    x: canvas.width / 2,
-                    y: 200
-                },
-                document.querySelectorAll(".shape")[parseInt(getRandom(0, document.querySelectorAll(".shape").length))]);
-            bigbooms.push(bigboom)
+            // 创建2-3个普通烟花
+            var count = Math.floor(getRandom(2, 4));
+            for (var i = 0; i < count; i++) {
+                var x = getRandom(canvas.width * 0.2, canvas.width * 0.8);
+                var y = getRandom(50, 200);
+                var bigboom = new Boom(x, 2, "#FFF", {
+                    x: x,
+                    y: y
+                });
+                bigbooms.push(bigboom);
+            }
         }
+        
         lastTime = newTime;
-        console.log(bigbooms)
     }
     stars.foreach(function() {
         this.paint()
@@ -201,8 +225,8 @@ Boom.prototype = {
     _move: function() {
         var dx = this.boomArea.x - this.x,
             dy = this.boomArea.y - this.y;
-        this.x = this.x + dx * 0.01;
-        this.y = this.y + dy * 0.01;
+        this.x = this.x + dx * 0.007;
+        this.y = this.y + dy * 0.007;
         if (Math.abs(dx) <= this.ba && Math.abs(dy) <= this.ba) {
             if (this.shape) {
                 this._shapBoom()
@@ -285,14 +309,26 @@ function putValue(canvas, context, ele, dr, callback) {
     } else {
         var text = ele.innerHTML;
         context.save();
-        var fontSize = 200;
-        context.font = fontSize + "px 宋体 bold";
+        var fontSize = 80;
+        context.font = fontSize + "px 微软雅黑 bold";
         context.textAlign = "center";
         context.textBaseline = "middle";
-        context.fillStyle = "rgba(" + parseInt(getRandom(128, 255)) + "," + parseInt(getRandom(128, 255)) + "," + parseInt(getRandom(128, 255)) + " , 1)";
+        
+        // 生成随机亮色
+        var r = getRandom(180, 255);
+        var g = getRandom(180, 255);
+        var b = getRandom(180, 255);
+        
+        // 添加描边使文字更清晰
+        context.strokeStyle = "rgba(0,0,0,0.2)";
+        context.lineWidth = 2;
+        context.strokeText(text, canvas.width / 2, canvas.height / 2);
+        
+        // 使用随机颜色填充
+        context.fillStyle = `rgb(${r},${g},${b})`;
         context.fillText(text, canvas.width / 2, canvas.height / 2);
         context.restore();
-        dots = getimgData(canvas, context, dr);
+        dots = getimgData(canvas, context, 3);
         callback(dots)
     }
 }
@@ -316,6 +352,7 @@ function getimgData(canvas, context, dr) {
                 var dot = {
                     x: x,
                     y: y,
+                    // 使用原始颜色值
                     a: imgData.data[i],
                     b: imgData.data[i + 1],
                     c: imgData.data[i + 2]
@@ -372,17 +409,17 @@ Frag.prototype = {
     paint: function() {
         ctx.save();
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+        ctx.arc(this.x, this.y, this.radius * 0.8, 0, 2 * Math.PI);
         ctx.fillStyle = "rgba(" + this.color.a + "," + this.color.b + "," + this.color.c + ",1)";
         ctx.fill();
         ctx.restore()
     },
     moveTo: function(index) {
-        this.ty = this.ty + 0.3;
+        this.ty = this.ty + 0.2;
         var dx = this.tx - this.x,
             dy = this.ty - this.y;
-        this.x = Math.abs(dx) < 0.1 ? this.tx: (this.x + dx * 0.1);
-        this.y = Math.abs(dy) < 0.1 ? this.ty: (this.y + dy * 0.1);
+        this.x = Math.abs(dx) < 0.1 ? this.tx: (this.x + dx * 0.07);
+        this.y = Math.abs(dy) < 0.1 ? this.ty: (this.y + dy * 0.07);
         if (dx === 0 && Math.abs(dy) <= 80) {
             this.dead = true
         }

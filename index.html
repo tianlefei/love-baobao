@@ -2,25 +2,28 @@
 <html>
 
 <head>
-
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To最美的宝宝</title>
     <meta name="language" content="zh-CN">
     <meta name="title" content="宝宝">
     <meta name="github" content="https://tianlefei.github.io">
     <meta name="describe" content="收集不易，您的star是我坚持的动力，同时也欢迎各位PR哦! ">
     <link rel="icon" type="image/x-icon" href="https://cdn.jsdelivr.net/gh/sun0225SUN/photos/img/20210715233345.png">
+    <link href="modal.css" rel="stylesheet" />
     <style>
         body {
             margin: 0;
             padding: 0;
             overflow: hidden;
+            background: rgba(0,5,24,1);
         }
 
         .city {
             width: 100%;
             position: fixed;
-            bottom:
-                0px;
+            bottom: 0px;
             z-index: 100;
         }
 
@@ -31,11 +34,51 @@
         audio {
             opacity: 0;
         }
+
+        /* 修改飘动的心形样式 */
+        .floating-heart {
+            position: fixed;
+            color: #ff4b6a;
+            font-size: 20px;
+            z-index: 9999;  /* 提高 z-index 确保在最上层 */
+            pointer-events: none;
+            user-select: none;
+            left: 0;  /* 添加初始位置 */
+            top: 0;   /* 添加初始位置 */
+        }
+
+        .heart-animation {
+            animation: float 6s ease-in-out forwards;
+        }
+
+        @keyframes float {
+            0% {
+                top: 100%;
+                transform: translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            25% {
+                top: 75%;
+                transform: translateX(50px) rotate(20deg);
+            }
+            50% {
+                top: 50%;
+                transform: translateX(-50px) rotate(-20deg);
+            }
+            75% {
+                top: 25%;
+                transform: translateX(50px) rotate(20deg);
+            }
+            100% {
+                top: -50px;
+                transform: translateX(-20px) rotate(-10deg);
+                opacity: 0;
+            }
+        }
     </style>
-    <title>
-        放烟花
-    </title>
-    <link href="modal.css" rel="stylesheet" />
 </head>
 
 <body onselectstart="return false">
@@ -45,7 +88,7 @@
     <div class="page_one">
         <div class="content">
             <div class="text_wrapper">
-                <img src="a8.png" alt=""  onclick="playAudio()">
+                <img src="a8.png" alt="" onclick="playAudio()">
                 <div class="text">
                     宝宝，我好喜欢你，你愿意做我女朋友吗？
                 </div>
@@ -68,34 +111,80 @@
     <img src="moon.png" alt="" id="moon" style="visibility: hidden;" />
     <div style="display:none">
         <div class="shape">
-            王淑芳
+            做我女朋友
         </div>
         <div class="shape">
             我喜欢你
+        </div>
+        <div class="shape">
+            王淑芳
         </div>
     </div>
 
     <audio id="music" loop="loop" preload="auto" autoplay="autoplay"
             src="http://music.163.com/song/media/outer/url?id=2674443509.mp3">
 </audio>
-    <script>
-
-    function playAudio() {
-
-      var audio = document.getElementById("music");
-
-      audio.play();
-
-    }
-
-</script>
-
-<!--    <embed src="http://music.163.com/style/swf/widget.swf?sid=553544145&type=2&auto=1&width=320&height=66" width="340" height="86"  allowNetworking="all"></embed>-->
-<!--    <iframe id="iframMusic" allow="autoplay" style="display:none" src="music.mp3"></iframe>-->
-<!--    <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="http://music.163.com/outchain/player?type=2&id=553544145&auto=1&height=66"></iframe>-->
     <script src="jquery.min.js"></script>
     <script src="fire.js"></script>
     <script src="talk.js"></script>
+    <script>
+        let heartInterval;
+
+        function playAudio() {
+            var audio = document.getElementById("music");
+            audio.play();
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart';
+            heart.textContent = '❤';
+            
+            // 设置初始位置
+            const startX = Math.random() * (window.innerWidth - 50);
+            heart.style.left = startX + 'px';
+            heart.style.top = window.innerHeight + 'px';
+            
+            const size = Math.random() * 40 + 20;
+            heart.style.fontSize = size + 'px';
+            
+            const colors = [
+                '#ff4b6a', '#ff6b8b', '#ff8ba8', 
+                '#ff1493', '#ff69b4', '#ffb6c1'
+            ];
+            heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+            
+            document.body.appendChild(heart);
+            
+            heart.offsetHeight;
+            heart.classList.add('heart-animation');
+
+            // 动画结束后移除元素，但不停止创建新的心形
+            setTimeout(() => {
+                if (heart && heart.parentNode) {
+                    heart.parentNode.removeChild(heart);
+                }
+            }, 6000);
+        }
+
+        function startHearts() {
+            createHeart(); // 立即创建一个心形
+            heartInterval = setInterval(createHeart, 500);
+        }
+
+        // 页面加载完成后开始创建心形
+        document.addEventListener('DOMContentLoaded', startHearts);
+
+        // 修改 talk.js 中的相关代码，移除对 stopHearts 的调用
+        $('#yes').click(function(event) {
+            modal('我会一直爱你！(^_^)', function() {
+                $('.page_one').addClass('hide');
+                $('.page_two').removeClass('hide');
+                // 不再调用 stopHearts
+                fireworks();
+            });
+        });
+    </script>
 </body>
 
 </html>

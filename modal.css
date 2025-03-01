@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 *{ -webkit-tap-highlight-color:rgba(0,0,0,0); -webkit-box-sizing: border-box; box-sizing: border-box; }
 .share_img{ width: 0; height: 0; overflow: hidden; opacity: 0; }
 .content{ padding: 80px 20px;}
@@ -42,4 +44,4 @@ p{ margin: 0; }
     position: absolute;
     z-index: 10;
 }
-.text{color: white}
+.text{color: white; font-family: 'Microsoft YaHei', sans-serif;}
