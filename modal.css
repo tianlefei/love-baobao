@@ -8,8 +8,8 @@
 .hide{ display: none !important; }
 p{ margin: 0; }
 .btn-groups{ padding-right: 20px; text-align: center; }
-.heart-btn{ display: inline-block; animation: breath 0.8s linear 0s infinite both; -webkit-animation: breath 0.8s linear 0s infinite both; }
-.btn{ position: relative; display: inline-block; width: 60px; height: 60px; margin: 0 30px; transform: rotate(45deg); -webkit-transform: rotate(45deg);}
+.heart-btn{ display: inline-block; animation: breath 0.7s linear 0s infinite both; -webkit-animation: breath 0.7s linear 0s infinite both; filter: drop-shadow(0 0 10px rgba(210, 106, 229, 0.8)); }
+.btn{ position: relative; display: inline-block; width: 60px; height: 60px; margin: 0 30px; transform: rotate(45deg); -webkit-transform: rotate(45deg); }
 .btn span{ display: block; width: 100%; height: 100%; line-height: 60px; margin-top: -10px; margin-left: -10px; text-align: center; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); }
 .btn-a{ background: #d26ae5; }
 .btn-b{ background: #c9c9c9; }
@@ -30,8 +30,8 @@ p{ margin: 0; }
         transform-origin: 50% 50%;
     }
     50%{
-        transform: scale3d(1.02,1.02,1.02);
-        -webkit-transform: scale3d(1.02,1.02,1.02);
+        transform: scale3d(1.15,1.15,1.15);
+        -webkit-transform: scale3d(1.15,1.15,1.15);
         transform-origin: 50% 50%;
     }
     100%{

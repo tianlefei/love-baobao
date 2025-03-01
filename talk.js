@@ -2,7 +2,7 @@ $(function() {
     $('#yes').click(function(event) {
         // 先隐藏按钮
         $('.btn-groups').hide();
-        modal('我会一直爱你！(^_^)', function() {
+        modal('我就知道你会答应！以后我们的故事才刚刚开始~ (^_^)', function() {
             $('.page_one').addClass('hide');
             $('.page_two').removeClass('hide');
             fireworks();
@@ -11,48 +11,48 @@ $(function() {
     $('#no').click(function(event) {
         // 先隐藏按钮
         $('.btn-groups').hide();
-        modal('明人不说暗话！', A);
+        modal('啊？系统错误！检测到您点击了一个不存在的按钮...', A);
     });
 });
 
 function A() {
-    modal('我喜欢你！', B);
+    modal('重新启动系统...检测到您面前有一位诚心告白的帅哥', B);
 }
 
 function B() {
-    modal('我想鼓起勇气！', C);
+    modal('据说拒绝我的人都会长痘痘，而且会单身一辈子！', C);
 }
 
 function C() {
-    modal('请你不要拒绝我', D);
+    modal('不要担心，我已经做好了准备，爱你三千遍', D);
 }
 
 function D() {
-    modal('拒绝我，不存在的', E);
+    modal('听说你拒绝我的次数越多，你越喜欢我，要不要再拒绝我几次？', E);
 }
 
 function E() {
-    modal('这辈子都不可能让你离开我', F);
+    modal('好吧，我承认，这个按钮是个摆设，程序员已经提前写好了结局', F);
 }
 
 function F() {
-    modal('跟我走吧', G);
+    modal('你知道吗？我的心脏已经为你预留了一个位置', G);
 }
 
 function G() {
-    modal('房产证上写你名', H);
+    modal('我保证，和我在一起，你的朋友圈会变得特别精彩', H);
 }
 
 function H() {
-    modal('我会做饭', I);
+    modal('而且我会做饭，洗碗，还会哄你开心，这可是三项特长！', I);
 }
 
 function I() {
-    modal('爱你。么么哒！', J)
+    modal('好啦，不逗你了，其实我就是想说：我真的很喜欢你！', J)
 }
 
 function J() {
-    modal('行，我们去民政局登记吧', function() {
+    modal('今天的月色一定很美，就像你一样...让我们一起去看看为你准备的烟花吧！', function() {
         fireworks();
     });
 }
