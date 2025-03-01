@@ -108,29 +108,60 @@ function animate() {
             var margin = window.innerWidth <= 768 ? 20 : 50;
             var yPos = window.innerWidth <= 768 ? 150 : 200;
             
-            // 调整三个文字的位置
-            var x1 = getRandom(canvas.width * 0.15, canvas.width * 0.25);
-            var x2 = getRandom(canvas.width * 0.45, canvas.width * 0.55);
-            var x3 = getRandom(canvas.width * 0.75, canvas.width * 0.85);
-            var y = getRandom(50, Math.min(yPos, canvas.height * 0.3));
-
-            // 创建文字烟花
-            var bigboom1 = new Boom(x1, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
-                x: x1,
-                y: y
-            }, document.querySelectorAll(".shape")[0]);
-            var bigboom2 = new Boom(x2, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
-                x: x2,
-                y: y
-            }, document.querySelectorAll(".shape")[1]);
-            var bigboom3 = new Boom(x3, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
-                x: x3,
-                y: y
-            }, document.querySelectorAll(".shape")[2]);
-
-            bigbooms.push(bigboom1);
-            bigbooms.push(bigboom2);
-            bigbooms.push(bigboom3);
+            // 只使用"王淑芳"和"我喜欢你"两个文字
+            var textOptions = ["王淑芳", "我喜欢你"];
+            var shapes = document.querySelectorAll(".shape");
+            var targetShapes = [];
+            
+            // 查找包含指定文字的元素
+            for (var i = 0; i < shapes.length; i++) {
+                var text = shapes[i].innerHTML.trim();
+                if (textOptions.includes(text)) {
+                    targetShapes.push({
+                        text: text,
+                        element: shapes[i]
+                    });
+                }
+            }
+            
+            // 如果找到了目标文字
+            if (targetShapes.length >= 2) {
+                // 计算屏幕中心
+                var centerX = canvas.width / 2;
+                var y = getRandom(50, Math.min(yPos, canvas.height * 0.3));
+                
+                // 创建"王淑芳"文字烟花
+                var wsfShape = targetShapes.find(item => item.text === "王淑芳");
+                if (wsfShape) {
+                    var leftX = getRandom(canvas.width * 0.25, canvas.width * 0.35);
+                    var bigboom1 = new Boom(leftX, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
+                        x: leftX,
+                        y: y
+                    }, wsfShape.element);
+                    bigbooms.push(bigboom1);
+                }
+                
+                // 创建"我喜欢你"文字烟花
+                var wxhnShape = targetShapes.find(item => item.text === "我喜欢你");
+                if (wxhnShape) {
+                    var rightX = getRandom(canvas.width * 0.65, canvas.width * 0.75);
+                    var bigboom2 = new Boom(rightX, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
+                        x: rightX,
+                        y: y
+                    }, wxhnShape.element);
+                    bigbooms.push(bigboom2);
+                }
+            } else {
+                // 如果找不到匹配的文字，创建一个心形烟花
+                var x = getRandom(canvas.width * 0.2, canvas.width * 0.8);
+                var y = getRandom(50, window.innerWidth <= 768 ? 150 : 200);
+                var bigboom = new Boom(x, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
+                    x: x,
+                    y: y
+                });
+                bigboom.heartType = true;
+                bigbooms.push(bigboom);
+            }
         } 
         else if (randomType < 0.5) {  // 心形烟花
             var count = window.innerWidth <= 768 ? 1 : 2;  // 手机上只显示1个心形
@@ -167,6 +198,10 @@ function animate() {
                 bigbooms.push(bigboom);
             }
         }
+        
+        // 新增：额外的两个烟花点（只播放心形和普通烟花）
+        createExtraFireworks();
+        
         lastTime = newTime;
     }
     stars.foreach(function() {
@@ -192,6 +227,51 @@ function animate() {
     });
     raf(animate)
 }
+
+// 新增函数：创建额外的两个烟花点
+function createExtraFireworks() {
+    // 确定两个固定位置（左右两侧）
+    var leftX = canvas.width * 0.15;
+    var rightX = canvas.width * 0.85;
+    var y = getRandom(50, window.innerWidth <= 768 ? 150 : 200); // 与普通烟花高度一致
+    
+    // 随机决定左侧烟花类型（心形或普通）
+    if (Math.random() < 0.5) {
+        // 左侧心形烟花
+        var leftBoom = new Boom(leftX, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
+            x: leftX,
+            y: y
+        });
+        leftBoom.heartType = true;
+        bigbooms.push(leftBoom);
+    } else {
+        // 左侧普通烟花
+        var leftBoom = new Boom(leftX, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
+            x: leftX,
+            y: y
+        });
+        bigbooms.push(leftBoom);
+    }
+    
+    // 随机决定右侧烟花类型（心形或普通）
+    if (Math.random() < 0.5) {
+        // 右侧心形烟花
+        var rightBoom = new Boom(rightX, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
+            x: rightX,
+            y: y
+        });
+        rightBoom.heartType = true;
+        bigbooms.push(rightBoom);
+    } else {
+        // 右侧普通烟花
+        var rightBoom = new Boom(rightX, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
+            x: rightX,
+            y: y
+        });
+        bigbooms.push(rightBoom);
+    }
+}
+
 function drawMoon() {
     var moon = document.getElementById("moon");
     var centerX = canvas.width - 200,
