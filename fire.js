@@ -98,28 +98,30 @@ function animate() {
     ctx.restore();
 
     var newTime = new Date();
-    if (newTime - lastTime > 1000) {  // 发射间隔保持1秒
+    if (newTime - lastTime > 1000) {
         var isText = Math.random() > 0.4;
         
         if (isText) {
-            // 根据屏幕宽度调整烟花位置
-            var margin = window.innerWidth <= 768 ? 30 : 50;
-            var x1 = getRandom(canvas.width / 6, canvas.width / 3 - margin);
-            var x2 = getRandom(canvas.width / 2 - margin, canvas.width / 2 + margin);
-            var x3 = getRandom(canvas.width * 2/3 + margin, canvas.width * 5/6);
-            var y = getRandom(50, Math.min(200, canvas.height / 3));
+            // 根据屏幕宽度调整文字烟花位置
+            var margin = window.innerWidth <= 768 ? 20 : 50;
+            var yPos = window.innerWidth <= 768 ? 150 : 200;  // 降低手机上的高度
+            
+            // 调整三个文字的位置
+            var x1 = getRandom(canvas.width * 0.15, canvas.width * 0.25);  // 左侧
+            var x2 = getRandom(canvas.width * 0.45, canvas.width * 0.55);  // 中间
+            var x3 = getRandom(canvas.width * 0.75, canvas.width * 0.85);  // 右侧
+            var y = getRandom(50, Math.min(yPos, canvas.height * 0.3));
 
-            var bigboom1 = new Boom(x1, 2, "#FFF", {
+            // 创建文字烟花
+            var bigboom1 = new Boom(x1, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
                 x: x1,
                 y: y
             }, document.querySelectorAll(".shape")[0]);
-
-            var bigboom2 = new Boom(x2, 2, "#FFF", {
+            var bigboom2 = new Boom(x2, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
                 x: x2,
                 y: y
             }, document.querySelectorAll(".shape")[1]);
-
-            var bigboom3 = new Boom(x3, 2, "#FFF", {
+            var bigboom3 = new Boom(x3, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
                 x: x3,
                 y: y
             }, document.querySelectorAll(".shape")[2]);
@@ -128,12 +130,12 @@ function animate() {
             bigbooms.push(bigboom2);
             bigbooms.push(bigboom3);
         } else {
-            // 创建2-3个普通烟花
-            var count = Math.floor(getRandom(2, 4));
+            // 调整普通烟花
+            var count = window.innerWidth <= 768 ? 2 : Math.floor(getRandom(2, 4));  // 手机上固定2个
             for (var i = 0; i < count; i++) {
                 var x = getRandom(canvas.width * 0.2, canvas.width * 0.8);
-                var y = getRandom(50, 200);
-                var bigboom = new Boom(x, 2, "#FFF", {
+                var y = getRandom(50, window.innerWidth <= 768 ? 150 : 200);
+                var bigboom = new Boom(x, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
                     x: x,
                     y: y
                 });
@@ -232,7 +234,7 @@ Boom.prototype = {
     _move: function(deltaTime) {
         var dx = this.boomArea.x - this.x,
             dy = this.boomArea.y - this.y;
-        var speed = 0.005 * deltaTime;  // 基础速度乘以时间因子
+        var speed = 0.008 * deltaTime;  // 增加基础速度从 0.005 到 0.008
         this.x = this.x + dx * speed;
         this.y = this.y + dy * speed;
         if (Math.abs(dx) <= this.ba && Math.abs(dy) <= this.ba) {
@@ -248,36 +250,48 @@ Boom.prototype = {
     },
     _drawLight: function() {
         ctx.save();
-        ctx.fillStyle = "rgba(255,228,150,0.3)";
+        ctx.fillStyle = "rgba(255,228,150,0.2)";
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.r + 3 * Math.random() + 1, 0, 2 * Math.PI);
+        var lightSize = window.innerWidth <= 768 ? 2 : 4;  // 手机上缩小光晕
+        ctx.arc(this.x, this.y, this.r + lightSize * Math.random() + 1, 0, 2 * Math.PI);
         ctx.fill();
         ctx.restore()
     },
     _boom: function() {
-        var fragNum = getRandom(30, 200);
+        // 根据屏幕大小调整粒子数量
+        var fragNum = window.innerWidth <= 768 ? 
+            getRandom(50, 150) :  // 手机上减少粒子
+            getRandom(100, 300);  // 电脑上保持原样
+        
         var style = getRandom(0, 10) >= 5 ? 1 : 2;
         var color;
         if (style === 1) {
             color = {
-                a: parseInt(getRandom(128, 255)),
-                b: parseInt(getRandom(128, 255)),
-                c: parseInt(getRandom(128, 255))
+                a: parseInt(getRandom(180, 255)),
+                b: parseInt(getRandom(180, 255)),
+                c: parseInt(getRandom(180, 255))
             }
         }
-        var fanwei = parseInt(getRandom(300, 400));
+        
+        // 调整扩散范围
+        var fanwei = window.innerWidth <= 768 ? 
+            parseInt(getRandom(100, 200)) :  // 手机上缩小范围
+            parseInt(getRandom(200, 300));   // 电脑上保持原样
+        
         for (var i = 0; i < fragNum; i++) {
             if (style === 2) {
                 color = {
-                    a: parseInt(getRandom(128, 255)),
-                    b: parseInt(getRandom(128, 255)),
-                    c: parseInt(getRandom(128, 255))
+                    a: parseInt(getRandom(180, 255)),
+                    b: parseInt(getRandom(180, 255)),
+                    c: parseInt(getRandom(180, 255))
                 }
             }
-            var a = getRandom( - Math.PI, Math.PI);
+            var a = getRandom(-Math.PI, Math.PI);
             var x = getRandom(0, fanwei) * Math.cos(a) + this.x;
             var y = getRandom(0, fanwei) * Math.sin(a) + this.y;
-            var radius = getRandom(0, 2);
+            var radius = window.innerWidth <= 768 ? 
+                getRandom(0.3, 1.5) :  // 手机上缩小粒子
+                getRandom(0.5, 2.5);   // 电脑上保持原样
             var frag = new Frag(this.x, this.y, radius, color, x, y);
             this.booms.push(frag)
         }
@@ -431,19 +445,32 @@ Frag.prototype = {
     paint: function() {
         ctx.save();
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius * 0.8, 0, 2 * Math.PI);
+        
+        // 根据粒子大小调整缩放比例
+        var scale = this.radius <= 1 ? 0.9 : 0.8;
+        ctx.arc(this.x, this.y, this.radius * scale, 0, 2 * Math.PI);
+        
+        // 添加发光效果
+        ctx.shadowColor = `rgba(${this.color.a},${this.color.b},${this.color.c},0.3)`;
+        ctx.shadowBlur = 2;
+        
         ctx.fillStyle = "rgba(" + this.color.a + "," + this.color.b + "," + this.color.c + ",1)";
         ctx.fill();
         ctx.restore()
     },
     moveTo: function(index, deltaTime) {
-        this.ty = this.ty + (0.18 * deltaTime);  // 下落速度乘以时间因子
+        // 调整下落速度
+        this.ty = this.ty + (0.15 * deltaTime);
         var dx = this.tx - this.x,
             dy = this.ty - this.y;
-        var speed = 0.06 * deltaTime;  // 扩散速度乘以时间因子
+        
+        // 调整扩散速度
+        var speed = 0.08 * deltaTime;
         this.x = Math.abs(dx) < 0.1 ? this.tx : (this.x + dx * speed);
         this.y = Math.abs(dy) < 0.1 ? this.ty : (this.y + dy * speed);
-        if (dx === 0 && Math.abs(dy) <= 80) {
+        
+        // 调整消失条件
+        if (dx === 0 && Math.abs(dy) <= 100) {
             this.dead = true
         }
         this.paint()

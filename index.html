@@ -38,14 +38,15 @@
         /* 修改飘动的心形样式 */
         .floating-heart {
             position: fixed;
-            font-size: 20px;
             z-index: 9999;
             pointer-events: none;
             user-select: none;
             left: 0;
             top: 0;
+            /* 移除默认颜色和大小 */
         }
 
+        /* 添加动画样式 */
         .heart-animation {
             animation: float 6s ease-in-out forwards;
         }
@@ -141,8 +142,12 @@
             
             // 设置初始位置
             const startX = Math.random() * (window.innerWidth - 50);
-            heart.style.left = startX + 'px';
-            heart.style.top = window.innerHeight + 'px';
+            
+            // 创建独立的style对象
+            const style = {
+                left: startX + 'px',
+                top: window.innerHeight + 'px'
+            };
             
             // 根据屏幕宽度调整心形大小范围
             let minSize, maxSize;
@@ -159,9 +164,9 @@
             
             // 随机大小
             const size = Math.random() * (maxSize - minSize) + minSize;
-            heart.style.fontSize = `${size}px`;
+            style.fontSize = `${size}px`;
             
-            // 随机颜色 - 修改颜色设置方式
+            // 随机颜色
             const colors = [
                 '#ff4b6a',  // 粉红
                 '#ff6b8b',  // 浅粉
@@ -173,22 +178,21 @@
                 '#ff77aa'   // 中粉
             ];
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            style.color = randomColor;
             
-            // 使用多种方式设置颜色，确保生效
-            heart.style.color = randomColor;
-            heart.style.setProperty('color', randomColor, 'important');
-            heart.setAttribute('style', `${heart.getAttribute('style')}; color: ${randomColor} !important;`);
+            // 应用样式
+            Object.assign(heart.style, style);
             
+            // 添加到文档
             document.body.appendChild(heart);
             
-            // 强制重排
+            // 强制重排并添加动画
             heart.offsetHeight;
             heart.classList.add('heart-animation');
-
+            
+            // 清理
             setTimeout(() => {
-                if (heart && heart.parentNode) {
-                    heart.parentNode.removeChild(heart);
-                }
+                heart && heart.parentNode && heart.parentNode.removeChild(heart);
             }, 6000);
         }
 
