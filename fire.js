@@ -99,17 +99,19 @@ function animate() {
 
     var newTime = new Date();
     if (newTime - lastTime > 1000) {
-        var isText = Math.random() > 0.4;
+        // 调整烟花类型概率
+        var randomType = Math.random();
         
-        if (isText) {
+        // 均分概率：1/3 文字烟花，1/3 心形烟花，1/3 普通烟花
+        if (randomType < 0.33) {  // 文字烟花
             // 根据屏幕宽度调整文字烟花位置
             var margin = window.innerWidth <= 768 ? 20 : 50;
-            var yPos = window.innerWidth <= 768 ? 150 : 200;  // 降低手机上的高度
+            var yPos = window.innerWidth <= 768 ? 150 : 200;
             
             // 调整三个文字的位置
-            var x1 = getRandom(canvas.width * 0.15, canvas.width * 0.25);  // 左侧
-            var x2 = getRandom(canvas.width * 0.45, canvas.width * 0.55);  // 中间
-            var x3 = getRandom(canvas.width * 0.75, canvas.width * 0.85);  // 右侧
+            var x1 = getRandom(canvas.width * 0.15, canvas.width * 0.25);
+            var x2 = getRandom(canvas.width * 0.45, canvas.width * 0.55);
+            var x3 = getRandom(canvas.width * 0.75, canvas.width * 0.85);
             var y = getRandom(50, Math.min(yPos, canvas.height * 0.3));
 
             // 创建文字烟花
@@ -129,9 +131,22 @@ function animate() {
             bigbooms.push(bigboom1);
             bigbooms.push(bigboom2);
             bigbooms.push(bigboom3);
-        } else {
-            // 调整普通烟花
-            var count = window.innerWidth <= 768 ? 2 : Math.floor(getRandom(2, 4));  // 手机上固定2个
+        } 
+        else if (randomType < 0.66) {  // 心形烟花
+            var count = window.innerWidth <= 768 ? 1 : 2;  // 手机上只显示1个心形
+            for (var i = 0; i < count; i++) {
+                var x = getRandom(canvas.width * 0.2, canvas.width * 0.8);
+                var y = getRandom(50, window.innerWidth <= 768 ? 150 : 200);
+                var bigboom = new Boom(x, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
+                    x: x,
+                    y: y
+                });
+                bigboom.heartType = true;  // 标记为心形烟花
+                bigbooms.push(bigboom);
+            }
+        }
+        else {  // 普通烟花
+            var count = window.innerWidth <= 768 ? 2 : Math.floor(getRandom(2, 4));
             for (var i = 0; i < count; i++) {
                 var x = getRandom(canvas.width * 0.2, canvas.width * 0.8);
                 var y = getRandom(50, window.innerWidth <= 768 ? 150 : 200);
@@ -258,10 +273,16 @@ Boom.prototype = {
         ctx.restore()
     },
     _boom: function() {
-        // 根据屏幕大小调整粒子数量
+        // 如果被标记为心形烟花，或者是随机触发的心形烟花
+        if (this.heartType || (!this.shape && Math.random() < 0.2)) {
+            this._heartBoom();
+            return;
+        }
+
+        // 原有的普通烟花代码保持不变
         var fragNum = window.innerWidth <= 768 ? 
-            getRandom(50, 150) :  // 手机上减少粒子
-            getRandom(100, 300);  // 电脑上保持原样
+            getRandom(50, 150) :
+            getRandom(100, 300);
         
         var style = getRandom(0, 10) >= 5 ? 1 : 2;
         var color;
@@ -315,6 +336,64 @@ Boom.prototype = {
                     that.booms.push(frag)
                 }
             })
+    },
+    // 修改心形烟花方法
+    _heartBoom: function() {
+        var color = {
+            a: parseInt(getRandom(220, 255)),  // 偏红色
+            b: parseInt(getRandom(50, 150)),
+            c: parseInt(getRandom(100, 180))
+        };
+        
+        // 显著增大心形尺寸
+        var heartSize = window.innerWidth <= 768 ? 100 : 150;  // 从 80/120 增大到 100/150
+        var pointCount = window.innerWidth <= 768 ? 40 : 50;   // 增加点数使轮廓更平滑
+        
+        // 生成心形轮廓点
+        var heartPoints = [];
+        for (var angle = 0; angle < Math.PI * 2; angle += (Math.PI * 2 / pointCount)) {
+            var x = 16 * Math.pow(Math.sin(angle), 3);
+            var y = -(13 * Math.cos(angle) - 5 * Math.cos(2*angle) - 2 * Math.cos(3*angle) - Math.cos(4*angle));
+            
+            // 缩放并添加较小的随机偏移
+            x = x * heartSize / 16 + getRandom(-1, 1);  // 减小随机偏移使形状更规整
+            y = y * heartSize / 16 + getRandom(-1, 1);
+            
+            heartPoints.push({x: x, y: y});
+        }
+        
+        // 创建心形轮廓的粒子，增大粒子尺寸
+        heartPoints.forEach(point => {
+            var frag = new Frag(
+                this.x, this.y,
+                window.innerWidth <= 768 ? getRandom(2, 3) : getRandom(2.5, 3.5),  // 增大粒子尺寸
+                color,
+                this.x + point.x,
+                this.y + point.y
+            );
+            this.booms.push(frag);
+        });
+        
+        // 增加装饰粒子数量和范围
+        var decorNum = window.innerWidth <= 768 ? 50 : 70;  // 增加装饰粒子数量
+        for (var i = 0; i < decorNum; i++) {
+            var angle = getRandom(0, Math.PI * 2);
+            var radius = getRandom(heartSize * 0.6, heartSize * 1.2);  // 调整装饰范围
+            var x = this.x + radius * Math.cos(angle);
+            var y = this.y + radius * Math.sin(angle);
+            
+            var frag = new Frag(
+                this.x, this.y,
+                getRandom(1, 2.5),  // 增大装饰粒子尺寸
+                {
+                    a: color.a - parseInt(getRandom(0, 20)),
+                    b: color.b - parseInt(getRandom(0, 10)),
+                    c: color.c - parseInt(getRandom(0, 10))
+                },
+                x, y
+            );
+            this.booms.push(frag);
+        }
     }
 };
 function putValue(canvas, context, ele, dr, callback) {
@@ -405,6 +484,7 @@ function getRandom(a, b) {
 var maxRadius = 1,
     stars = [];
 function drawBg() {
+    // 原有的星星代码
     for (var i = 0; i < 100; i++) {
         var r = Math.random() * maxRadius;
         var x = Math.random() * canvas.width;
