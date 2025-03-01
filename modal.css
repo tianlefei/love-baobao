@@ -17,9 +17,9 @@ p{ margin: 0; }
 .btn-a:after{ content: ''; position: absolute; display: block; width: 60px; height: 30px; background: #d26ae5; left: 0; top: -29px; border-top-left-radius: 60px; border-top-right-radius: 60px;}
 .btn-b:before{ content: ''; position: absolute; display: block; width: 30px; height: 60px; background: #c9c9c9; left: -29px; top: 0; border-top-left-radius: 60px; border-bottom-left-radius: 60px; }
 .btn-b:after{ content: ''; position: absolute; display: block; width: 60px; height: 30px; background: #c9c9c9; left: 0; top: -29px; border-top-left-radius: 60px; border-top-right-radius: 60px;}
-.container{  }
+.container{ position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000; }
 .container .mask{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); }
-.container .modal{ width: 50%; height: 160px; position: absolute; top: 50%; left: 50%; padding: 20px 15px; border-radius: 5px; transform: translate(-50%, -70%); -webkit-transform: translate(-50%，-70%); background: #f3f3f3;}
+.container .modal{ width: 80%; max-width: 400px; min-width: 280px; height: auto; min-height: 160px; position: absolute; top: 50%; left: 50%; padding: 20px 15px; border-radius: 5px; transform: translate(-50%, -70%); -webkit-transform: translate(-50%，-70%); background: #f3f3f3; z-index: 1001; }
 .container .modal p{ margin-top: 20px; margin-bottom: 20px; font-size: 16px; color: #353535; text-align: center;}
 .confirm{ display: block; width: 120px; height: 40px; margin: 0 auto; border: none; font-size: 16px; border-radius: 5px; color: #ffffff; background: #f45cae; }
 .type_words{ padding: 12px 20px; }
@@ -45,3 +45,25 @@ p{ margin: 0; }
     z-index: 10;
 }
 .text{color: white; font-family: 'Microsoft YaHei', sans-serif;}
+
+/* 修改弹窗显示时隐藏按钮的样式 */
+.container ~ .btn-groups,
+.container ~ .page_one .btn-groups,
+.container:not(.hide) ~ .btn-groups {
+    display: none !important;
+}
+
+@media screen and (max-width: 768px) {
+    .container .modal {
+        width: 90%;
+        padding: 15px 10px;
+    }
+    .container .modal p {
+        font-size: 14px;
+    }
+    .confirm {
+        width: 100px;
+        height: 36px;
+        font-size: 14px;
+    }
+}

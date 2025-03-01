@@ -95,11 +95,12 @@ function animate() {
         var isText = Math.random() > 0.4; // 60%概率显示文字，40%概率显示普通烟花
 
         if (isText) {
-            // 创建三个文字烟花
-            var x1 = getRandom(canvas.width / 6, canvas.width / 3);
-            var x2 = getRandom(canvas.width / 2 - 50, canvas.width / 2 + 50);
-            var x3 = getRandom(canvas.width * 2/3, canvas.width * 5/6);
-            var y = getRandom(50, 200);
+            // 根据屏幕宽度调整烟花位置
+            var margin = window.innerWidth <= 768 ? 30 : 50;
+            var x1 = getRandom(canvas.width / 6, canvas.width / 3 - margin);
+            var x2 = getRandom(canvas.width / 2 - margin, canvas.width / 2 + margin);
+            var x3 = getRandom(canvas.width * 2/3 + margin, canvas.width * 5/6);
+            var y = getRandom(50, Math.min(200, canvas.height / 3));
 
             var bigboom1 = new Boom(x1, 2, "#FFF", {
                 x: x1,
@@ -309,7 +310,17 @@ function putValue(canvas, context, ele, dr, callback) {
     } else {
         var text = ele.innerHTML;
         context.save();
-        var fontSize = 80;
+        
+        // 根据屏幕宽度调整字体大小
+        var fontSize;
+        if (window.innerWidth <= 768) {  // 手机屏幕
+            fontSize = 40;  // 小屏幕使用更小的字体
+        } else if (window.innerWidth <= 1024) {  // 平板屏幕
+            fontSize = 60;
+        } else {  // 电脑屏幕
+            fontSize = 80;
+        }
+        
         context.font = fontSize + "px 微软雅黑 bold";
         context.textAlign = "center";
         context.textBaseline = "middle";
@@ -328,7 +339,10 @@ function putValue(canvas, context, ele, dr, callback) {
         context.fillStyle = `rgb(${r},${g},${b})`;
         context.fillText(text, canvas.width / 2, canvas.height / 2);
         context.restore();
-        dots = getimgData(canvas, context, 3);
+        
+        // 根据屏幕大小调整粒子密度
+        var density = window.innerWidth <= 768 ? 4 : 3;
+        dots = getimgData(canvas, context, density);
         callback(dots)
     }
 }

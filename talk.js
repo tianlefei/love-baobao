@@ -1,5 +1,7 @@
 $(function() {
     $('#yes').click(function(event) {
+        // 先隐藏按钮
+        $('.btn-groups').hide();
         modal('我会一直爱你！(^_^)', function() {
             $('.page_one').addClass('hide');
             $('.page_two').removeClass('hide');
@@ -11,6 +13,8 @@ $(function() {
         });
     });
     $('#no').click(function(event) {
+        // 先隐藏按钮
+        $('.btn-groups').hide();
         modal('明人不说暗话！', A);
     });
 });
@@ -71,6 +75,8 @@ function modal(content, callback) {
         '</div>'+
         '</div>';
     $('body').append(tpl);
+    
+    // 点击确定按钮时关闭弹窗
     $(document).on('click', '.confirm', function() {
         $('.container').remove();
         callback();

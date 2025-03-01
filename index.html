@@ -145,21 +145,29 @@
             heart.style.left = startX + 'px';
             heart.style.top = window.innerHeight + 'px';
             
+            // 随机大小
             const size = Math.random() * 40 + 20;
             heart.style.fontSize = size + 'px';
             
+            // 随机颜色 - 修改颜色生成方式
             const colors = [
-                '#ff4b6a', '#ff6b8b', '#ff8ba8', 
-                '#ff1493', '#ff69b4', '#ffb6c1'
+                '#ff4b6a',  // 粉红
+                '#ff6b8b',  // 浅粉
+                '#ff8ba8',  // 淡粉
+                '#ff1493',  // 深粉
+                '#ff69b4',  // 热粉
+                '#ffb6c1',  // 浅粉红
+                '#ff0066',  // 亮粉
+                '#ff77aa'   // 中粉
             ];
-            heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            heart.style.color = randomColor;
             
             document.body.appendChild(heart);
             
             heart.offsetHeight;
             heart.classList.add('heart-animation');
 
-            // 动画结束后移除元素，但不停止创建新的心形
             setTimeout(() => {
                 if (heart && heart.parentNode) {
                     heart.parentNode.removeChild(heart);
