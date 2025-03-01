@@ -311,17 +311,21 @@ function putValue(canvas, context, ele, dr, callback) {
         var text = ele.innerHTML;
         context.save();
         
-        // 根据屏幕宽度调整字体大小
-        var fontSize;
+        // 根据屏幕宽度调整字体大小和粒子密度
+        var fontSize, density;
         if (window.innerWidth <= 768) {  // 手机屏幕
-            fontSize = 40;  // 小屏幕使用更小的字体
+            fontSize = 32;  // 更小的字体
+            density = 2;    // 保持较高的粒子密度
         } else if (window.innerWidth <= 1024) {  // 平板屏幕
-            fontSize = 60;
+            fontSize = 45;
+            density = 2.5;
         } else {  // 电脑屏幕
-            fontSize = 80;
+            fontSize = 70;
+            density = 3;
         }
         
-        context.font = fontSize + "px 微软雅黑 bold";
+        // 优化文字渲染 - 移除 bold 使文字更细
+        context.font = `${fontSize}px "Microsoft YaHei", "微软雅黑", sans-serif`;
         context.textAlign = "center";
         context.textBaseline = "middle";
         
@@ -330,9 +334,9 @@ function putValue(canvas, context, ele, dr, callback) {
         var g = getRandom(180, 255);
         var b = getRandom(180, 255);
         
-        // 添加描边使文字更清晰
+        // 减小描边宽度
         context.strokeStyle = "rgba(0,0,0,0.2)";
-        context.lineWidth = 2;
+        context.lineWidth = window.innerWidth <= 768 ? 2 : 3;
         context.strokeText(text, canvas.width / 2, canvas.height / 2);
         
         // 使用随机颜色填充
@@ -340,8 +344,6 @@ function putValue(canvas, context, ele, dr, callback) {
         context.fillText(text, canvas.width / 2, canvas.height / 2);
         context.restore();
         
-        // 根据屏幕大小调整粒子密度
-        var density = window.innerWidth <= 768 ? 4 : 3;
         dots = getimgData(canvas, context, density);
         callback(dots)
     }
@@ -366,7 +368,6 @@ function getimgData(canvas, context, dr) {
                 var dot = {
                     x: x,
                     y: y,
-                    // 使用原始颜色值
                     a: imgData.data[i],
                     b: imgData.data[i + 1],
                     c: imgData.data[i + 2]

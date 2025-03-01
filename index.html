@@ -38,13 +38,12 @@
         /* 修改飘动的心形样式 */
         .floating-heart {
             position: fixed;
-            color: #ff4b6a;
             font-size: 20px;
-            z-index: 9999;  /* 提高 z-index 确保在最上层 */
+            z-index: 9999;
             pointer-events: none;
             user-select: none;
-            left: 0;  /* 添加初始位置 */
-            top: 0;   /* 添加初始位置 */
+            left: 0;
+            top: 0;
         }
 
         .heart-animation {
@@ -149,7 +148,7 @@
             const size = Math.random() * 40 + 20;
             heart.style.fontSize = size + 'px';
             
-            // 随机颜色 - 修改颜色生成方式
+            // 随机颜色 - 确保颜色设置生效
             const colors = [
                 '#ff4b6a',  // 粉红
                 '#ff6b8b',  // 浅粉
@@ -161,10 +160,11 @@
                 '#ff77aa'   // 中粉
             ];
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            heart.style.color = randomColor;
+            heart.style.setProperty('color', randomColor, 'important');  // 使用 important 确保颜色生效
             
             document.body.appendChild(heart);
             
+            // 强制重排后添加动画类
             heart.offsetHeight;
             heart.classList.add('heart-animation');
 
