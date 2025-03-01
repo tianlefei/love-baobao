@@ -102,8 +102,8 @@ function animate() {
         // 调整烟花类型概率
         var randomType = Math.random();
         
-        // 均分概率：1/3 文字烟花，1/3 心形烟花，1/3 普通烟花
-        if (randomType < 0.33) {  // 文字烟花
+        // 25% 文字烟花，25% 心形烟花，25% 双心烟花，25% 普通烟花
+        if (randomType < 0.25) {  // 文字烟花
             // 根据屏幕宽度调整文字烟花位置
             var margin = window.innerWidth <= 768 ? 20 : 50;
             var yPos = window.innerWidth <= 768 ? 150 : 200;
@@ -132,7 +132,7 @@ function animate() {
             bigbooms.push(bigboom2);
             bigbooms.push(bigboom3);
         } 
-        else if (randomType < 0.66) {  // 心形烟花
+        else if (randomType < 0.5) {  // 心形烟花
             var count = window.innerWidth <= 768 ? 1 : 2;  // 手机上只显示1个心形
             for (var i = 0; i < count; i++) {
                 var x = getRandom(canvas.width * 0.2, canvas.width * 0.8);
@@ -144,6 +144,16 @@ function animate() {
                 bigboom.heartType = true;  // 标记为心形烟花
                 bigbooms.push(bigboom);
             }
+        }
+        else if (randomType < 0.75) {  // 双心烟花
+            var x = canvas.width * 0.5;  // 居中显示
+            var y = getRandom(50, window.innerWidth <= 768 ? 150 : 200);
+            var bigboom = new Boom(x, window.innerWidth <= 768 ? 1.5 : 2, "#FFF", {
+                x: x,
+                y: y
+            });
+            bigboom.doubleHeartType = true;  // 标记为双心烟花
+            bigbooms.push(bigboom);
         }
         else {  // 普通烟花
             var count = window.innerWidth <= 768 ? 2 : Math.floor(getRandom(2, 4));
@@ -273,13 +283,14 @@ Boom.prototype = {
         ctx.restore()
     },
     _boom: function() {
-        // 如果被标记为心形烟花，或者是随机触发的心形烟花
-        if (this.heartType || (!this.shape && Math.random() < 0.2)) {
+        if (this.doubleHeartType) {
+            this._doubleHeartBoom();
+            return;
+        }
+        else if (this.heartType || (!this.shape && Math.random() < 0.2)) {
             this._heartBoom();
             return;
         }
-
-        // 原有的普通烟花代码保持不变
         var fragNum = window.innerWidth <= 768 ? 
             getRandom(50, 150) :
             getRandom(100, 300);
@@ -390,6 +401,66 @@ Boom.prototype = {
                     b: color.b - parseInt(getRandom(0, 10)),
                     c: color.c - parseInt(getRandom(0, 10))
                 },
+                x, y
+            );
+            this.booms.push(frag);
+        }
+    },
+    // 修改双心烟花方法
+    _doubleHeartBoom: function() {
+        var color = {
+            a: parseInt(getRandom(220, 255)),
+            b: parseInt(getRandom(50, 150)),
+            c: parseInt(getRandom(100, 180))
+        };
+        
+        // 显著增大心形尺寸和距离
+        var heartSize = window.innerWidth <= 768 ? 140 : 200;  // 增加一倍
+        var distance = window.innerWidth <= 768 ? 100 : 160;   // 增加一倍
+        
+        // 创建左侧心形
+        this._createHeart(this.x - distance/2, this.y, heartSize, color);
+        
+        // 创建右侧心形
+        this._createHeart(this.x + distance/2, this.y, heartSize, color);
+        
+        // 在两心之间添加连接线
+        this._createHeartConnection(this.x - distance/2, this.y, this.x + distance/2, this.y, color);
+    },
+    // 调整创建单个心形的方法
+    _createHeart: function(centerX, centerY, size, color) {
+        var pointCount = window.innerWidth <= 768 ? 35 : 45;  // 增加点数使轮廓更平滑
+        
+        for (var angle = 0; angle < Math.PI * 2; angle += (Math.PI * 2 / pointCount)) {
+            var x = 16 * Math.pow(Math.sin(angle), 3);
+            var y = -(13 * Math.cos(angle) - 5 * Math.cos(2*angle) - 2 * Math.cos(3*angle) - Math.cos(4*angle));
+            
+            x = x * size / 16 + getRandom(-1, 1);
+            y = y * size / 16 + getRandom(-1, 1);
+            
+            var frag = new Frag(
+                centerX, centerY,
+                window.innerWidth <= 768 ? getRandom(2, 3) : getRandom(2.5, 3.5),  // 增大粒子尺寸
+                color,
+                centerX + x,
+                centerY + y
+            );
+            this.booms.push(frag);
+        }
+    },
+    // 调整心形连接线
+    _createHeartConnection: function(x1, y1, x2, y2, color) {
+        var particleCount = window.innerWidth <= 768 ? 20 : 30;  // 增加连接线粒子数量
+        
+        for (var i = 0; i < particleCount; i++) {
+            var ratio = i / (particleCount - 1);
+            var x = x1 + (x2 - x1) * ratio;
+            var y = y1 + (y2 - y1) * ratio - Math.sin(ratio * Math.PI) * 40;  // 增大弧度
+            
+            var frag = new Frag(
+                (x1 + x2) / 2, (y1 + y2) / 2,
+                window.innerWidth <= 768 ? getRandom(2, 3) : getRandom(2.5, 3.5),  // 增大粒子尺寸
+                color,
                 x, y
             );
             this.booms.push(frag);
@@ -526,14 +597,17 @@ Frag.prototype = {
         ctx.save();
         ctx.beginPath();
         
-        // 根据粒子大小调整缩放比例
-        var scale = this.radius <= 1 ? 0.9 : 0.8;
-        ctx.arc(this.x, this.y, this.radius * scale, 0, 2 * Math.PI);
+        // 添加闪烁效果
+        if (Math.random() > 0.8) {
+            ctx.globalAlpha = getRandom(0.5, 1);
+        }
         
         // 添加发光效果
-        ctx.shadowColor = `rgba(${this.color.a},${this.color.b},${this.color.c},0.3)`;
-        ctx.shadowBlur = 2;
+        ctx.shadowColor = `rgba(${this.color.a},${this.color.b},${this.color.c},0.5)`;
+        ctx.shadowBlur = 3;
         
+        var scale = this.radius <= 1 ? 0.9 : 0.8;
+        ctx.arc(this.x, this.y, this.radius * scale, 0, 2 * Math.PI);
         ctx.fillStyle = "rgba(" + this.color.a + "," + this.color.b + "," + this.color.c + ",1)";
         ctx.fill();
         ctx.restore()

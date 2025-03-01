@@ -78,6 +78,37 @@
                 opacity: 0;
             }
         }
+
+        .music-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .music-icon {
+            width: 20px;
+            height: 20px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>');
+            background-size: contain;
+        }
+
+        .music-icon.playing {
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 
@@ -119,11 +150,20 @@
         <div class="shape">
             王淑芳
         </div>
+        <div class="shape">
+            一生一世
+        </div>
+        <div class="shape">
+            永远爱你
+        </div>
     </div>
 
     <audio id="music" loop="loop" preload="auto" autoplay="autoplay"
             src="http://music.163.com/song/media/outer/url?id=2674443509.mp3">
 </audio>
+    <div class="music-control">
+        <i class="music-icon playing"></i>
+    </div>
     <script src="jquery.min.js"></script>
     <script src="fire.js"></script>
     <script src="talk.js"></script>
@@ -214,6 +254,19 @@
                 // 不再调用 stopHearts
                 fireworks();
             });
+        });
+
+        document.querySelector('.music-control').addEventListener('click', function() {
+            var audio = document.getElementById('music');
+            var icon = document.querySelector('.music-icon');
+            
+            if (audio.paused) {
+                audio.play();
+                icon.classList.add('playing');
+            } else {
+                audio.pause();
+                icon.classList.remove('playing');
+            }
         });
     </script>
 </body>
