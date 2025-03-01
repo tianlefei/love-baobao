@@ -84,16 +84,23 @@ function initAnimate() {
     animate()
 }
 var lastTime;
+var lastFrameTime = Date.now();
+var deltaTime = 0;
 function animate() {
+    // 计算帧间时间差
+    var currentTime = Date.now();
+    deltaTime = (currentTime - lastFrameTime) / 16.67; // 标准化到60fps
+    lastFrameTime = currentTime;
+
     ctx.save();
-    ctx.fillStyle = "rgba(0,5,24,0.08)";
+    ctx.fillStyle = "rgba(0,5,24,0.06)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.restore();
-    var newTime = new Date();
-    if (newTime - lastTime > 800 + (window.innerHeight - 767) / 2) {
-        // 随机决定是显示文字还是普通烟花
-        var isText = Math.random() > 0.4; // 60%概率显示文字，40%概率显示普通烟花
 
+    var newTime = new Date();
+    if (newTime - lastTime > 1000) {  // 发射间隔保持1秒
+        var isText = Math.random() > 0.4;
+        
         if (isText) {
             // 根据屏幕宽度调整烟花位置
             var margin = window.innerWidth <= 768 ? 30 : 50;
@@ -133,7 +140,6 @@ function animate() {
                 bigbooms.push(bigboom);
             }
         }
-        
         lastTime = newTime;
     }
     stars.foreach(function() {
@@ -143,12 +149,12 @@ function animate() {
     bigbooms.foreach(function(index) {
         var that = this;
         if (!this.dead) {
-            this._move();
+            this._move(deltaTime);
             this._drawLight()
         } else {
             this.booms.foreach(function(index) {
                 if (!this.dead) {
-                    this.moveTo(index)
+                    this.moveTo(index, deltaTime)
                 } else {
                     if (index === that.booms.length - 1) {
                         bigbooms[bigbooms.indexOf(that)] = null
@@ -223,11 +229,12 @@ Boom.prototype = {
         ctx.fill();
         ctx.restore()
     },
-    _move: function() {
+    _move: function(deltaTime) {
         var dx = this.boomArea.x - this.x,
             dy = this.boomArea.y - this.y;
-        this.x = this.x + dx * 0.007;
-        this.y = this.y + dy * 0.007;
+        var speed = 0.005 * deltaTime;  // 基础速度乘以时间因子
+        this.x = this.x + dx * speed;
+        this.y = this.y + dy * speed;
         if (Math.abs(dx) <= this.ba && Math.abs(dy) <= this.ba) {
             if (this.shape) {
                 this._shapBoom()
@@ -429,12 +436,13 @@ Frag.prototype = {
         ctx.fill();
         ctx.restore()
     },
-    moveTo: function(index) {
-        this.ty = this.ty + 0.2;
+    moveTo: function(index, deltaTime) {
+        this.ty = this.ty + (0.18 * deltaTime);  // 下落速度乘以时间因子
         var dx = this.tx - this.x,
             dy = this.ty - this.y;
-        this.x = Math.abs(dx) < 0.1 ? this.tx: (this.x + dx * 0.07);
-        this.y = Math.abs(dy) < 0.1 ? this.ty: (this.y + dy * 0.07);
+        var speed = 0.06 * deltaTime;  // 扩散速度乘以时间因子
+        this.x = Math.abs(dx) < 0.1 ? this.tx : (this.x + dx * speed);
+        this.y = Math.abs(dy) < 0.1 ? this.ty : (this.y + dy * speed);
         if (dx === 0 && Math.abs(dy) <= 80) {
             this.dead = true
         }
